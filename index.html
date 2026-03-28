@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Upload File</h2>
+
+<input type="file" id="file">
+<button onclick="upload()">Upload</button>
+
+<p id="out"></p>
+
+<script>
+async function upload() {
+  const file = document.getElementById("file").files[0];
+
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+
+  reader.onload = async () => {
+    const base64 = reader.result.split(",")[1];
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: file.name,
+        data: base64
+      })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("out").innerHTML =
+      "🔥 Direct Link: <br><a href='" + data.direct_link + "'>Download</a>";
+  };
+}
+</script>
+
+</body>
+</html>
